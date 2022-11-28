@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'First app',
       routes: {
-        '/firstroute': (context) => FirstRoute(),
-        '/secondroute': (context) => SecondRoute(),
+        '/firstroute': (context) => const FirstRoute(),
+        '/secondroute': (context) => const SecondRoute(),
       },
       home: Scaffold(
         appBar: AppBar(
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         ),
         body: Column(children: <Widget>[
           Expanded(child: MyListView()),
-          MyButton(),
+          const MyButton(),
           const Text('Made by Gorm')
         ]),
       ),
@@ -51,37 +51,80 @@ class MyButtonState extends State<MyButton> {
         setState(() {
           buttonColor = buttonColor - 200;
         });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FirstRoute()),
+        );
       },
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
           color: Colors.amber[buttonColor],
         ),
-        child: const Text('Double click me'),
+        child: const Text('Double Click to Open Route'),
       ),
     );
   }
 }
 
-class MyListView extends StatelessWidget {
-  final List<String> entries = <String>['A', 'B', 'C', 'Q'];
-  final List<int> colorCodes = <int>[600, 500, 300, 100];
+class MyListViewState extends State<MyListView> {
+  TextEditingController noteController = TextEditingController();
 
+  void addItemToList() {
+    setState(() {
+      widget.entries.insert(0, noteController.text);
+      noteController.text = '';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(children: <Widget>[
+        TextField(
+          controller: noteController,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Note',
+          ),
+        ),
+        ElevatedButton(
+          child: Text('Add Note'),
+          onPressed: () {
+            addItemToList();
+          },
+        ),
+        Expanded(
+            child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: widget.entries.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    height: 50,
+                    color:
+                        Color.fromRGBO(57, 197, 243, 0.95 - (index % 2 * 0.5)),
+                    child: Center(child: Text(widget.entries[index])),
+                  );
+                }))
+      ]),
+    );
+  }
+}
+
+class MyListView extends StatefulWidget {
+  final List<String> entries = <String>[
+    'Homework',
+    'Workout',
+    'Dinner',
+    'Read'
+  ];
+  final int colorCode = 57;
   MyListView({super.key});
 
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: entries.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 50,
-            color: Colors.amber[colorCodes[index]],
-            child: Center(child: Text('Entry ${entries[index]}')),
-          );
-        });
-  }
+  @override
+  State<MyListView> createState() => MyListViewState();
 }
 
 class FirstRoute extends StatelessWidget {
