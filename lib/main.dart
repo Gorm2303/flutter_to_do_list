@@ -78,6 +78,12 @@ class MyListViewState extends State<MyListView> {
     });
   }
 
+  void removeItemFromList(value) {
+    setState(() {
+      widget.entries.remove(value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -98,15 +104,29 @@ class MyListViewState extends State<MyListView> {
         ),
         Expanded(
             child: ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(2),
                 itemCount: widget.entries.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    color:
-                        Color.fromRGBO(57, 197, 243, 0.95 - (index % 2 * 0.5)),
-                    child: Center(child: Text(widget.entries[index])),
-                  );
+                  return Row(children: <Widget>[
+                    Expanded(
+                        child: Container(
+                      height: 50,
+                      padding: const EdgeInsets.all(4),
+                      color: Color.fromRGBO(
+                          57, 197, 243, 0.95 - (index % 2 * 0.5)),
+                      child: Row(children: <Widget>[
+                        Expanded(child: Text(widget.entries[index])),
+                        Container(
+                            height: 50,
+                            width: 50,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  removeItemFromList(widget.entries[index]);
+                                },
+                                child: const Text('X')))
+                      ]),
+                    )),
+                  ]);
                 }))
       ]),
     );
